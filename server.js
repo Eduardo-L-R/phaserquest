@@ -68,15 +68,15 @@ if(myArgs.waitForDatabase) {
     sleep(myArgs.waitForDatabase);
 }
 
-if(myArgs.heroku){ // --heroku flag to behave according to Heroku's specs
-    mongoHost = 'heroku_4tv68zls:'+myArgs.pass+'@ds141368.mlab.com:41368';
-    mongoDBName = 'heroku_4tv68zls';
-}else {
+// if(myArgs.heroku){ // --heroku flag to behave according to Heroku's specs
+//     mongoHost = 'heroku_4tv68zls:'+myArgs.pass+'@ds141368.mlab.com:41368';
+//     mongoDBName = 'heroku_4tv68zls';
+// }else {
     var mongoPort = (myArgs.mongoPort || 27017);
     var mongoServer = (myArgs.mongoServer || 'localhost');
     mongoHost = mongoServer+':'+mongoPort;
     mongoDBName = 'phaserQuest';
-}
+// }
 
 server.listen(myArgs.p || process.env.PORT || 8081,function(){ // -p flag to specify port ; the env variable is needed for Heroku
     console.log('Listening on '+server.address().port);
@@ -84,11 +84,11 @@ server.listen(myArgs.p || process.env.PORT || 8081,function(){ // -p flag to spe
     gs.readMap();
     server.setUpdateLoop();
 
-    mongo.connect('mongodb://'+mongoHost+'/'+mongoDBName,function(err,db){
+    mongo.connect('mongodb://'+mongoHost,function(err,client){
         if(err) throw(err);
-        server.db = db;
+        server.db = client.db(mongoDBName)
         console.log('Connection to db established');
-    });
+        });
 });
 
 io.on('connection',function(socket){
